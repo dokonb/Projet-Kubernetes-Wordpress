@@ -1,0 +1,25 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: wordpress-deployment
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: wordpress
+    spec:
+      containers:
+      - name: wordpress
+        image: wordpress:4.7.4
+        ports:
+        - containerPort: 80
+        env:
+            -name: DB_PASSWORD
+            value: 'montreal123'
+            -name: DB_HOST
+            value: '104.198.166.4'
+            -name: DB_USER
+            value: 'root'
+            -name: DB_NAME
+            value: 'dokonb'
