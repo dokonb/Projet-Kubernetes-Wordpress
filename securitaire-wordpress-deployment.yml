@@ -1,0 +1,57 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: wordpress
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: wordpress
+    spec:
+      containers:
+        - image: wordpress:4.7.4
+          name: web
+          env:
+            - name: DB_HOST
+              value: 127.0.0.1:3306
+       
+            
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: cloudsql-db-credentials
+                  key: password
+            - name: DB_USER
+              valueFr  om:
+                secretKeyRef:
+                  name: cloudsql-db-credentials
+                  key: username
+            
+          ports:
+            - containerPort: 80
+              name: wordpress
+        - image: gcr.io/cloudsql-docker/gce-proxy:1.09
+          name: cloudsql-proxy
+          command: ["/cloud_sql_proxy", "--dir=/cloudsql",
+                    "-instances=cr460-158000:us-central1=tcp:3306",
+                    "-credential_file=/secrets/cloudsql/credentials.json"]
+        
+          volumeMounts:
+            - name: cloudsql-instance-credentials
+              mountPath: /secrets/cloudsql
+              readOnly: true
+            - name: ssl-certs
+              mountPath: /etc/ssl/certs
+            - name: cloudsql
+              mountPath: /cloudsql
+        
+      volumes:
+        - name: cloudsql-instance-credentials
+          secret:
+            secretName: cloudsql-instance-credentials
+        - name: ssl-certs
+          hostPath:
+            path: /etc/ssl/certs
+        - name: cloudsql
+          emptyDir:
