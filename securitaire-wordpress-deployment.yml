@@ -34,7 +34,7 @@ spec:
         - image: gcr.io/cloudsql-docker/gce-proxy:1.09
           name: cloudsql-proxy
           command: ["/cloud_sql_proxy", "--dir=/cloudsql",
-                    "-instances=cr460-158000:us-central1=tcp:3306",
+                    "-instances=cr460-158000:us-central1:dokonb=tcp:3306",
                     "-credential_file=/secrets/cloudsql/credentials.json"]
         
           volumeMounts:
